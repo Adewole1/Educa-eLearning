@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load widget_tweaks %}
 
 {% block title %}
  {% if object %}
@@ -9,19 +10,103 @@
 {% endblock title %}
 
 {% block content %}
- <h1>
-     {% if object %}
-       Edit content "{{ object.title }}"
-     {% else %}
-       Add new content
-     {% endif %}
- </h1>
- <div class="module">
-     <h2>Course info</h2>
-     <form action="" method="post" enctype="multipart/form-data">
-        {{ form.as_p }}
+  <div class="container rounded-2 mt-5">
+    <div class="p-4 p-md-5 rounded-3 border bg-light row g-3">
+      <h1>
+        {% if object %}
+          Edit content "{{ object.title }}"
+        {% else %}
+          Add new content
+        {% endif %}
+      </h1>
+      <form action='' enctype="multipart/form-data" method="post">
         {% csrf_token %}
-        <p><input type="submit" value="Save content"></p>
-     </form>
- </div>
+        {% if form.errors %}
+          <div class="form-floating mb-3">
+            {% if form.title.errors %}
+              {% render_field form.title class="form-control is-invalid" id="id_title" placeholder="Title" %}
+              <div class="invalid-feedback">
+                {{ form.title.errors }}
+              </div>  
+            {% else %}
+              {% render_field form.title class="form-control is-valid" id="id_title" placeholder="Title" %}
+              <div class="valid-feedback">
+                Looks Good
+              </div>
+            {% endif %}
+            <label for="id_title" class="form-label">Title</label>
+          </div>
+          {% if form.content %}
+            <div class="form-floating mb-3">
+              {% if form.content.errors %}
+                {% render_field form.content class="form-control is-invalid" id="id_content" placeholder="Content" style="height:150px" %}
+                <div class="invalid-feedback">
+                  {{ form.content.errors }}
+                </div>  
+              {% else %}
+                {% render_field form.content class="form-control is-valid" id="id_content" placeholder="Content" style="height:150px" %}
+                <div class="valid-feedback">
+                  Looks Good
+                </div>
+              {% endif %}      
+              <label for="id_content" class="form-label">Content</label>
+            </div>
+          {% elif form.file %}
+            <div class="input-group mb-3">
+              {% if form.file.errors %}
+                {% render_field form.file class="form-control is-invalid" type='file' id="id_file" placeholder="File" %}
+                <div class="invalid-feedback">
+                  {{ form.content.errors }}
+                </div>  
+              {% else %}
+                {% render_field form.file class="form-control is-valid" type='file' id="id_file" placeholder="File" %}
+                <div class="valid-feedback">
+                  Looks Good
+                </div>
+              {% endif %}              
+            </div>
+          {% elif form.url %}
+            <div class="form-floating mb-3">
+              {% if form.url.errors %}
+                {% render_field form.url class="form-control" id="id_url" placeholder="Url" %}
+                <div class="invalid-feedback">
+                  {{ form.url.errors }}
+                </div>  
+              {% else %}
+                {% render_field form.url class="form-control" id="id_url" placeholder="Url" %}
+                <div class="valid-feedback">
+                  Looks Good
+                </div>
+              {% endif %}              
+              <label for="id_url" class="form-label">File URL</label>
+            </div>
+          {% endif %}
+        {% else %}
+          <div class="form-floating mb-3">
+            {% render_field form.title class="form-control" id="id_title" placeholder="Title" %}
+            <label for="id_title" class="form-label">Title</label>
+          </div>
+          {% if form.content %}
+            <div class="form-floating mb-3">
+              {% render_field form.content class="form-control" id="id_content" placeholder="Content" style="height:150px" %}
+              <label for="id_content" class="form-label">Content</label>
+            </div>
+          {% elif form.file %}
+            <div class="input-group mb-3">
+              {% render_field form.file class="form-control" type='file' id="id_file" placeholder="File" %}
+              <!-- <label for="id_file" class="form-label">Choose File</label> -->
+            </div>
+          {% elif form.url %}
+            <div class="form-floating mb-3">
+              {% render_field form.url class="form-control" id="id_url" placeholder="Url" %}
+              <label for="id_url" class="form-label">File URL</label>
+            </div>
+          {% endif %}
+        {% endif %}          
+        <div class="col-md-6">
+          <button type="submit" class="btn btn-primary">Save content</button>
+        </div>
+      </form>
+    </div>
+  </div>
 {% endblock content %}

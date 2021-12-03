@@ -31,5 +31,11 @@ urlpatterns = [
         cache_page(60*15)(views.StudentCourseDetailView.as_view()),
         name="student_course_detail_module"
     ),
+    path(
+        "register/instructor",
+        views.InstructorRegistrationView.as_view(),
+        name="instructor_registration"
+    )
+    
     
 ]

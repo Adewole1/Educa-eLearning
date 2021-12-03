@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load widget_tweaks %}
 
 {% block title %}
     {% if object %}
@@ -9,19 +10,212 @@
 {% endblock title %}
 
 {% block content %}
-    <h1>
-        {% if object %}
-            Edit course "{{ object.title }}"
+    <div class="container bg-light mt-5 rounded-5">
+        
+        {% if form.errors %}
+            {% if object %}
+                <h1 class="display-4 fw-bold justify-content-sm-center">
+                    Edit course "{{ object.title }}"
+                </h1>
+            {% else %}
+                <h1 class="display-4 fw-bold justify-content-sm-center">
+                    Create a new course
+                </h1>
+            {% endif %}               
+            
+            
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+                <div class="form-floating col-12">
+                    {% if form.subject.errors %}
+                        {% render_field form.subject class="form-select is-invalid" id="id_subject" placeholder="Subject" %}
+                        <div class="invalid-feedback">
+                            {{ form.subject.errors }}
+                        </div>
+                    {% else %}
+                        {% render_field form.subject class="form-select is-valid" id="id_subject" placeholder="Subject" %}
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                    {% endif %}
+                    <label for="id_subject" class="form-label">{{ form.subject.label }}</label>                                                
+                </div>
+                <div class="form-floating col-md-6">
+                    {% if form.title.errors %}
+                        {% render_field form.title class="form-control is-invalid" id="id_title" placeholder="Title" name="title" %}
+                        <div class="invalid-feedback">
+                            {{ form.title.errors }}
+                        </div>
+                    {% else %}
+                        {% render_field form.title class="form-control is-valid" id="id_title" placeholder="Title" name="title" %}
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                    {% endif %}
+                    <label for="id_title" class="form-label">{{ form.title.label }}</label>
+                </div>
+                <div class="form-floating col-md-6">                        
+                    {% if form.slug.errors %}
+                        {% render_field form.slug class="form-control is-invalid" id="id_slug" placeholder="Slug" name="slug" %}
+                        <div class="invalid-feedback">
+                            {{ form.slug.errors }}
+                        </div>
+                    {% else %}
+                        {% render_field form.slug class="form-control is-valid" id="id_slug" placeholder="Slug" name="slug" %}
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                    {% endif %}
+                    <label for="id_slug" class="form-label">{{ form.slug.label }}</label>
+                </div>
+                <div class="form-floating col-12">
+                    {% if form.overview.errors %}
+                        {% render_field form.overview class="form-control is-invalid" id="id_overview" placeholder="Overview" style="height: 150px" %}
+                        <div class="invalid-feedback">
+                            {{ form.overview.errors }}
+                        </div>
+                    {% else %}
+                        {% render_field form.overview class="form-control is-valid" id="id_overview" placeholder="Overview" style="height: 150px" %}
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                    {% endif %}
+                    <label for="id_overview" class="form-label">{{ form.overview.label }}</label>
+                </div>
+                <input type="submit" value="Save course" class="btn btn-primary mb-3 mt-3 m-2 col-2" role="button">
+            </form>
         {% else %}
-            Create a new course
+            {% if object %}
+                <h1 class="display-4 fw-bold">
+                    Edit course "{{ object.title }}"
+                </h1>
+            {% else %}
+                <h1 class="display-4 fw-bold justify-content-sm-center">
+                    Create a new course
+                </h1>
+            {% endif %}               
+            
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+                <div class="form-floating col-12">
+                    {% render_field form.subject class="form-select" id="id_subject" placeholder="Subject" %}                        
+                    <label for="id_subject" class="form-label">{{ form.subject.label }}</label>                                                
+                </div>
+                <div class="form-floating col-md-6">
+                    {% render_field form.title class="form-control" id="id_title" placeholder="Title" name="title"%}                        
+                    <label for="id_title" class="form-label">{{ form.title.label }}</label>
+                </div>
+                <div class="form-floating col-md-6">
+                    {% render_field form.slug class="form-control" id="id_slug" placeholder="Slug" name="slug" %}                        
+                    <label for="id_slug" class="form-label">{{ form.slug.label }}</label>
+                </div>
+                <div class="form-floating col-12">
+                    {% render_field form.overview class="form-control" id="id_overview" placeholder="Overview" style="height: 250px" %}
+                    <label for="id_overview" class="form-label">{{ form.overview.label }}</label>
+                </div>
+                <div class="d-grid gap-2 d-sm-flex">
+                    <input type="submit" value="Save course" class="btn btn-primary btn-lg mb-3 mt-3" role="button">
+                </div>
+            </form>
         {% endif %}
-    </h1>
-    <div class="module">
-        <h2>Course info</h2>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <p><input type="submit" value="Save course"></p>
-        </form>
+
     </div>
+    
 {% endblock content %}
+
+{% block domready %}
+
+        var titleField = $("#id_title")
+        var slugField = $("#id_slug")
+
+        var hasEdited = false;
+
+        // If there's a slug already present, and it looks different to what would have been generated from the current title, deduced that the slug has already been manually edited.
+        if(slugField.val() != '' && slugify(getTitle()) != slugField.val()) {
+            hasEdited = true;
+            slugField.css('color', '#000');
+        }
+
+        // Colour the slug field grey to imply that magic is happening.
+        slugField.css('color', '#666');
+        
+        // Generate the slug automatically as soon as the script loads, as the 'title' field may have been prepopulated with a value.
+        populateSlugField(titleField);
+
+        // Generate a new slug each time the title has been edited. 
+        titleField.keyup(function() {
+            populateSlugField();
+        });
+
+        // Check for a manual override of the generated slug. Once the slug has been manually overridden, automatic slug generation should stop. 
+        slugField.change(function() {
+            console.log('slug field has been edited');
+            hasEdited = true;
+            $(this).css('color', '#000');
+        });
+        
+    /**
+    * Populates the 'slug' field with a URL-safe version of the 'title' field.
+    */
+        function populateSlugField() {
+            if(!hasEdited && titleField.length > 0) {
+                slug = slugify(getTitle());
+                slugField.val(slug);
+            }
+        }
+
+    /**
+    * Converts text to a URL-safe form. For example, 'My Title' would become 'my_title'.
+    *
+    * @param  string  text The text to be slugified.
+    * @return string		Slugified text
+    */	
+        function slugify(text) {
+            text = text.toLowerCase();
+            
+            // Remove any characters that aren't URL-safe.
+            slug = text
+                // Replace spaces.
+                .replace(/\s+/g, '_')
+                // Replace special characters.
+                .replace(/[àáâãäå]/g, 'a')
+                .replace(/æ/g, 'ae')
+                .replace(/ç/g, 'c')
+                .replace(/[èéêë]/g, 'e')
+                .replace(/[ìíîï]/g, 'i')
+                .replace(/ñ/g, 'n')                        
+                .replace(/[òóôõöø]/g, 'o')
+                .replace(/œ/g, 'oe')
+                .replace(/[ùúûü]/g, 'u')
+                .replace(/[ýÿ]/g, 'y')
+                // In what's left, remove anything that isn't URL-safe. 
+                .replace(/[^a-z0-9_-]/g, '');
+                
+            return slug; 
+        }
+
+    /**
+    * Fetches source text to be slugified. This might come from just one field, or be concatenated from multiple fields.
+    *
+    * @return	string	Title text 
+    */	
+        function getTitle() {
+            if(titleField.length > 1) {
+                // As multiple title fields have been defined, concatenate them.
+                title = '';
+                i = 0;
+                titleField.each(function() {
+                    if(i > 0 && title.length > 0 && this.value.length > 0) {
+                        title += '_';
+                    }
+                    title += this.value;
+                    i++;
+                });
+            } else {
+                title = titleField.val();
+            }
+            
+            return title;
+        }
+
+{% endblock domready %}

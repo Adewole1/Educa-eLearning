@@ -1,40 +1,118 @@
 {% extends "base.html" %}
-{% load cache %}
+{% load index %}
+{% load course %}
 
 {% block title %}
   {{ object.title }}
 {% endblock title %}
 
 {% block content %}
-  <h1>{{ module.title }}</h1>
-  <div class="contents">
-      <h3>Modules</h3>
-      <ul id="modules">
+<main class="d-flex mt-4 ">
+  {% with course=module.course %}
+    <nav class="navbar navbar-expand-md">
+      <div class="d-flex">
+        <a class="navbar-toggler" role="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarToggler" aria-controls="sidebarToggler" aria-expanded="false" aria-label="Toggle navigation">
+          <strong class="">Modules</strong>
+        </a>
+      </div> 
+
+      <div class="offcanvas offcanvas-start d-flex flex-column flex-shrink-0 align-self-start p-3 text-white bg-dark" tabindex="-1" id="sidebarToggler" aria-labelledby="sidebarTogglerLabel" style="width: 250px; border-top-right-radius: 6px; border-bottom-right-radius: 6px">
+        <div href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+            <span class="fs-4">
+                {{ course.title|title }} - modules
+            </span>
+        </div>
+        <hr>
+        <ul class="nav nav-pills flex-column mb-auto">
           {% for m in object.modules.all %}
-            <li data-id="{{ m.id }}" {% if m==module %}
-              class="selected"
-            {% endif %}>
-                <a href="{% url 'student_course_detail_module' object.id m.id %}">
-                    <span>
-                        Module <span class="order">{{ m.order|add:1 }}</span>
-                    </span>
-                    <br>
-                    {{ m.title }}
-                </a>
+            <li data-id="{{ m.id }}">
+              <a href="{% url 'student_course_detail_module' object.id m.id %}" {% if m == module %}
+                  class="nav-link active" {% else %}  class="nav-link text-white">
+                  {% endif %}
+                  <span class="fs-6">{{ m.title|title }}</span>
+                  <br><span class="text-start fs-6 fst-italic">Instructor: {{ course.owner.get_full_name }}</span>
+              </a>              
             </li>
           {% empty %}
             <li>No modules yet.</li>
           {% endfor %}
-      </ul>
-  </div>
-  <div class="module">
-    {% cache 600 module_contents module %}
-      {% for content in module.contents.all %}
-        {% with item=content.item %}
-          <h2>{{ item.title }}</h2>
-          {{ item.render }}
-        {% endwith %}
-      {% endfor %}
-    {% endcache %}
-  </div>
+        </ul>
+        <hr>
+      </div>
+    
+      <div class="container d-flex flex-column align-items-stretch align-self-start" >
+        <div class="align-items-stretch bg-light p-3 rounded-3" style="width: 90%;">
+          <div class="pb-2 border-bottom row">
+              <div class="col">
+                <h2>Module contents</h2>
+              </div>
+              <div class="col gap-2 d-md-flex justify-content-md-end">
+                <a href="{% url 'chat:course_chat_room' object.id %}" class="me-md-2 btn btn-primary" role="button" >
+                  Chat room
+                </a>
+              </div>
+              
+          </div>
+          <div class="d-flex row flex-shrink-0 bg-light p-3">
+        
+            {% for content in module.contents.all %}
+              
+              {% with item=content.item %}
+                <div class="list-group list-group-flush">
+                      <div class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 align-items-center justify-content-between">
+                          <strong class="mb-1"><a class="text-decoration-none" role="button" data-bs-toggle="modal" data-bs-target="#{{ item|model_name|title }}{{ item.id }}">{{ item|title }}</a></strong>
+                          <!-- <span>{{ item.id }}</span> -->
+                          <div class="mb-1 small">{{ item|model_name|title }}</div>
+                        </div>                 
+                      </div>
+                </div>
+                <div class="modal fade" id="{{ item|model_name|title }}{{ item.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-xl .modal-fullscreen-lg-down modal-dialog-scrollable">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">{{ item }} - {{ item|model_name|title }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            {% if item|model_name == 'text' %}
+                              <p>
+                                {{ item.content }}
+                              </p>
+                            {% elif item|model_name == 'video' %}
+                              <div class="ratio ratio-21x9">
+                                <iframe src="{{ item.url }}" title="YouTube video" allowfullscreen></iframe>
+                              </div>
+                            {% elif item|model_name == 'image' %}
+                                <img src="{{ item.file.url }}" alt="{{ item }}" width="95%">
+                            {% else %}
+                              <div style="width: 80%;">
+                                {{ item.render }}
+                              </div>
+                            {% endif %}
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+              {% endwith %}
+              
+            {% empty %}
+              <div class="list-group list-group-flush">
+                <div class="list-group-item list-group-item-action">
+                  <div class="d-flex row w-100 align-items-center justify-content-between">
+                    <span class="fs-5">There are no contents in this module, yet!</span>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}    
+
+          </div>
+        </div>
+      </div>
+    </nav>
+  {% endwith %}
+</main>
 {% endblock content %}

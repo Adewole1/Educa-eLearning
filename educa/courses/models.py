@@ -5,6 +5,9 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.template.loader import render_to_string
+from django.utils.text import slugify
+from autoslug import AutoSlugField
+
 from .fields import OrderField
 
 
@@ -13,8 +16,9 @@ class Subject(models.Model):
     docstring
     """
     title = models.CharField(max_length=200)
-    slug  = models.SlugField(max_length=200, unique=True)
+    slug  = AutoSlugField(populate_from='title', unique=True, editable=True)
 
+    
     class Meta:
         ordering = ['title']
 
@@ -29,19 +33,20 @@ class Course(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, 
     related_name='courses_related')
     subject = models.ForeignKey(Subject, 
-    related_name='courses', 
-    on_delete=models.CASCADE)
+                                related_name='courses', 
+                                on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=200, unique=True)
+    slug = AutoSlugField(populate_from='title', unique=True, editable=True)
     overview = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     students = models.ManyToManyField(User,
                                       related_name='courses_joined',
                                       blank=True)
 
+    
     class Meta:
         ordering =['-created']
-
+    
     def __str__(self):
         return self.title
 

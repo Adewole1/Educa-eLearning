@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+    <div class="container mt-5">
+        
+        <form method="post" class="p-4 p-md-5 border rounded-3 bg-light row g-3">
+            <div class="pb-2 border-bottom">
+                <h1>Instructor sign up</h1>
+                <p>Enter your details to create an account:</p>
+            </div>
+            {% csrf_token %}
+            {% if form.errors %}
+                <div class="form-floating col-md-6">
+                    {% if form.first_name.errors %}
+                        {% render_field form.first_name class="form-control is-invalid" id="id_first_name" placeholder="First Name" %}
+                        <div class="invalid-feedback">
+                            {{ form.first_name.errors }}
+                        </div>
+                    {% else %}
+                        {% render_field form.first_name class="form-control is-valid" id="id_first_name" placeholder="First Name" %}
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                    {% endif %}
+                    <label for="id_first_name" class="form-label">{{ form.first_name.label }}</label>                                                
+                </div>
+                <div class="form-floating col-md-6">
+                    {% if form.last_name.errors %}
+                        {% render_field form.last_name class="form-control is-invalid" id="id_last_name" placeholder="Last Name" %}
+                        <div class="invalid-feedback">
+                            {{ form.last_name.errors }}
+                        </div>
+                    {% else %}
+                        {% render_field form.last_name class="form-control is-valid" id="id_last_name" placeholder="Last Name" %}
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                    {% endif %}
+                    <label for="id_last_name" class="form-label">{{ form.last_name.label }}</label>                                                
+                </div>
+                <div class="form-floating col-12">
+                    {% if form.email.errors %}
+                        {% render_field form.email class="form-control is-invalid" id="id_email" placeholder="Email" %}
+                        <div class="invalid-feedback">
+                            {{ form.email.errors }}
+                        </div>
+                    {% else %}
+                        {% render_field form.email class="form-control is-valid" id="id_email" placeholder="Email" %}
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                    {% endif %}
+                    <label for="id_email" class="form-label">{{ form.email.label }}</label>                                                
+                </div>
+                <div class="form-floating col-12">
+                    {% if form.username.errors %}
+                        {% render_field form.username class="form-control is-invalid" id="id_username" placeholder="Username" %}
+                        <div class="invalid-feedback">
+                            {{ form.username.errors }}
+                        </div>
+                    {% else %}
+                        {% render_field form.username class="form-control is-valid" id="id_username" placeholder="Username" %}
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                    {% endif %}
+                    <label for="id_username" class="form-label">{{ form.username.label }}</label>                                                
+                </div>
+                <div class="form-floating col-md-6">
+                  {% if form.password1.errors %}
+                      {% render_field form.password1 class="form-control is-invalid" id="id_password1" placeholder="Password1" %}
+                      <div class="invalid-feedback">
+                          {{ form.password1.errors }}
+                      </div>
+                  {% else %}
+                      {% render_field form.password1 class="form-control is-valid" id="id_password1" placeholder="Password1" %}
+                      <div class="valid-feedback">
+                          Looks good!
+                      </div>
+                  {% endif %}
+                  <label for="id_password1" class="form-label">{{ form.password1.label }}</label>                                                
+                </div>
+                <div class="form-floating col-md-6">
+                  {% if form.password2.errors %}
+                      {% render_field form.password2 class="form-control is-invalid" id="id_password2" placeholder="Password2" %}
+                      <div class="invalid-feedback">
+                          {{ form.password2.errors }}
+                      </div>
+                  {% else %}
+                      {% render_field form.password2 class="form-control is-valid" id="id_password2" placeholder="Password2" %}
+                      <div class="valid-feedback">
+                          Looks good!
+                      </div>
+                  {% endif %}
+                  <label for="id_password2" class="form-label">{{ form.password2.label }}</label>                                                
+                </div>
+            {% else %}
+                <div class="form-floating mb-3 mt-3 col-md-6">
+                    {% render_field form.first_name class="form-control" required='required' autofocus='autofocus' id="id_first_name" placeholder="Firstname" %}
+                    <label for="id_first_name" class="form-label">{{ form.first_name.label }}</label>
+                </div>
+                <div class="form-floating mb-3 mt-3 col-md-6">
+                    {% render_field form.last_name class="form-control" id="id_last_name" required='required' placeholder="Lastname" %}
+                    <label for="id_last_name" class="form-label">{{ form.last_name.label }}</label>
+                </div>
+                <div class="form-floating mb-3 col-12">
+                    {% render_field form.email class="form-control" id="id_email" required='required' placeholder="Email" %}
+                    <label for="id_email" class="form-label">{{ form.email.label }}</label>
+                </div>
+                <div class="form-floating mb-3 col-12">
+                    {% render_field form.username class="form-control" id="id_username" placeholder="Username" %}
+                    <label for="id_username" class="form-label">{{ form.username.label }}</label>
+                </div>
+                <div class="form-floating mb-3 col-md-6">
+                    {% render_field form.password1 class="form-control" id="id_password1" placeholder="Password1" %}
+                    <label for="id_password1" class="form-label">{{ form.password1.label }}</label>
+                </div>
+                <div class="form-floating mb-3 col-md-6">
+                    {% render_field form.password2 class="form-control" id="id_password2" placeholder="Password2" %}
+                    <label for="id_password2" class="form-label">{{ form.password2.label }}</label>
+                </div>
+            {% endif %}
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Create account</button>
+            </div>
+            
+        </form>
+    </div>
+
+{% endblock content %}

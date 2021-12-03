@@ -1,17 +1,88 @@
 {% extends "base.html" %}
+{% load widget_tweaks %}
 
 {% block title %}
   Sign up
 {% endblock title %}
 
 {% block content %}
-  <h1>Sign up</h1>
-  <div class="module">
-      <p>Enter your details to create an account:</p>
-      <form method="post">
-          {% csrf_token %}
-          {{ form.as_p }}
-          <p><input type="submit" value="Create my account"></p>
+  
+  <div class="container mt-5">
+    {% if form.errors %}
+      
+      <form method="post" class="p-4 p-md-5 border rounded-3 bg-light row g-3">
+        <h1>Student sign up</h1>
+        <p>Enter your details to create an account:</p>
+        {% csrf_token %}
+        <div class="form-floating col-12">
+          {% if form.username.errors %}
+              {% render_field form.username class="form-control is-invalid" id="id_username" placeholder="Username" %}
+              <div class="invalid-feedback">
+                  {{ form.username.errors }}
+              </div>
+          {% else %}
+              {% render_field form.username class="form-control is-valid" id="id_username" placeholder="Username" %}
+              <div class="valid-feedback">
+                  Looks good!
+              </div>
+          {% endif %}
+          <label for="id_username" class="form-label">{{ form.username.label }}</label>                                                
+        </div>
+        <div class="form-floating col-md-6">
+          {% if form.passowrd1.errors %}
+              {% render_field form.password1 class="form-control is-invalid" id="id_password1" placeholder="Password1" %}
+              <div class="invalid-feedback">
+                  {{ form.password1.errors }}
+              </div>
+          {% else %}
+              {% render_field form.password1 class="form-control is-valid" id="id_password1" placeholder="Password1" %}
+              <div class="valid-feedback">
+                  Looks good!
+              </div>
+          {% endif %}
+          <label for="id_password1" class="form-label">{{ form.password1.label }}</label>                                                
+        </div>
+        <div class="form-floating col-md-6">
+          {% if form.password2.errors %}
+              {% render_field form.password2 class="form-control is-invalid" id="id_password2" placeholder="Password2" %}
+              <div class="invalid-feedback">
+                  {{ form.password2.errors }}
+              </div>
+          {% else %}
+              {% render_field form.password2 class="form-control is-valid" id="id_password2" placeholder="Password2" %}
+              <div class="valid-feedback">
+                  Looks good!
+              </div>
+          {% endif %}
+          <label for="id_password2" class="form-label">{{ form.password2.label }}</label>                                                
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary">Create account</button>
+        </div>
       </form>
+    {% else %}      
+      <form method="post" class="p-4 p-md-5 border rounded-3 bg-light row g-3">
+        <h1>Student sign up</h1>
+        <p>Enter your details to create an account:</p>
+        {% csrf_token %}
+        <div class="form-floating mb-3 col-12">
+          {% render_field form.username class="form-control" id="id_username" placeholder="Username" %}
+          <label for="id_username" class="form-label">{{ form.username.label }}</label>
+        </div>
+        <div class="form-floating mb-3 col-md-6">
+            {% render_field form.password1 class="form-control" id="id_password1" placeholder="Password1" %}
+            <label for="id_password1" class="form-label">{{ form.password1.label }}</label>
+        </div>
+        <div class="form-floating mb-3 col-md-6">
+            {% render_field form.password2 class="form-control" id="id_password2" placeholder="Password2" %}
+            <label for="id_password2" class="form-label">{{ form.password2.label }}</label>
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary">Create account</button>
+        </div>
+      </form>
+    {% endif %}
+             
   </div>
+
 {% endblock content %}

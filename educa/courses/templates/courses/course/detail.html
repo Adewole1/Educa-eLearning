@@ -5,32 +5,37 @@
 {% endblock title %}
 
 {% block content %}
-  {% with subject=object.subject %}
-    <h1>
-        {{ object.title }}
-    </h1>
-    <div class="module">
-        <h2>Overview</h2>
-        <p>
-            <a href="{% url 'course_list_subject' subject.slug %}">
-                {{ subject.title }}.
+  <div class="container py-4">
+    {% with subject=object.subject %}
+      <div class="p-5 mb-4 bg-light rounded-3">
+        <div class="container-fluid py-5">
+          <h1 class="display-5 fw-bold">{{ object.title }}</h1>
+          <p class="col-md-8 fs-4">{{ object.overview|linebreaks }}</p>
+          <p class="align-items-stretch">
+            <strong>Subject</strong>:<a href="{% url 'course_list_subject' subject.slug %}">
+                {{ subject.title }}
+            </a><br>
+            <strong>Modules</strong>:{{ object.modules.count }} <br>
+            <strong>Instructor</strong>:{{ object.owner.get_full_name }}
+          </p>
+          {% if request.user.is_authenticated %}
+            {% if request.user in object.students.all %}
+                <a class="btn btn-primary btn-lg" role="button" href="{% url 'student_course_detail' object.id %}">Access Course</a>
+            {% else %}
+              <form action="{% url 'student_enroll_course' %}" method="post">
+                {% csrf_token %}
+                {{ enroll_form }}
+                <input class="btn btn-primary btn-lg" type="submit" role="button" value="Enroll now">
+              </form>
+            {% endif %}
+            
+          {% else %}
+            <a href="{% url 'student_registration' %}" class="btn btn-primary btn-lg" role="button">
+                Register to enroll
             </a>
-            {{ object.modules.count }} modules.
-            Instructor: {{ object.owner.get_full_name }}
-        </p>
-        {{ object.overview|linebreaks }}
-        {% if request.user.is_authenticated %}
-          <form action="{% url 'student_enroll_course' %}" method="post">
-            {% csrf_token %}
-            {{ enroll_form }}
-            <input type="submit" value="Enroll now">
-          </form>
-        {% else %}
-          <a href="{% url 'student_registration' %}" class="button">
-            Register to enroll
-          </a>
-        {% endif %}
-        
-    </div>
-  {% endwith %}
+          {% endif %}
+        </div>
+      </div>
+    {% endwith %}
+  </div>
 {% endblock content %}

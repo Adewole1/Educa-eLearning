@@ -3,13 +3,13 @@
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView, FormView
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import Group, User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from django.core.cache import cache
 
-from .forms import CourseEnrollForm
+from .forms import CourseEnrollForm, InstructorRegistrationForm
 from courses.models import Course
 
 class StudentRegistrationView(CreateView):
@@ -27,6 +27,24 @@ class StudentRegistrationView(CreateView):
         login(self.request, user)
         return result
     
+    
+class InstructorRegistrationView(CreateView):
+    form_class = InstructorRegistrationForm
+    template_name = "students/instructor/registration.html"
+    success_url = reverse_lazy('manage_course_list')
+    # success_url = reverse_lazy('course_list')
+    
+    def form_valid(self, form):
+        result = super().form_valid(form)
+        cd = form.cleaned_data
+        group = Group.objects.get(name='Instructors')
+        user = authenticate(
+            username = cd['username'],
+            password = cd['password1']
+        )
+        group.user_set.add(user)
+        login(self.request, user)
+        return result
 
 class StudentEnrollCourseView(LoginRequiredMixin, FormView):
     course = None

@@ -2,23 +2,24 @@
 
 from django.views.generic.list import ListView
 from django.urls import reverse_lazy
-from django.views.generic.edit import CreateView, UpdateView,\
-    DeleteView
+from django.views.generic.edit import (CreateView, 
+                                       UpdateView,
+                                       DeleteView)
 from django.views.generic.detail import DetailView
-from django.contrib.auth.mixins import LoginRequiredMixin,\
-    PermissionRequiredMixin
-from django.shortcuts import redirect, get_object_or_404
-from django.views.generic.base import TemplateResponseMixin,\
-    View
+from django.contrib.auth.mixins import (LoginRequiredMixin,
+                                        PermissionRequiredMixin)
+from django.shortcuts import (redirect, get_object_or_404)
+from django.views.generic.base import (TemplateResponseMixin,
+                                       View)
 from django.forms.models import modelform_factory
 from django.apps import apps
 from django.db.models import Count
-from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
+from braces.views import (CsrfExemptMixin,
+                          JsonRequestResponseMixin)
 from django.core.cache import cache
 
-from .models import Course, Subject
+from .models import Course, Subject, Module, Content
 from .forms import ModuleFormSet
-from .models import Module, Content
 from students.forms import CourseEnrollForm
 
 class OwnerMixin(object):
@@ -46,7 +47,7 @@ class OwnerCourseMixin(OwnerMixin,
 class OwnerCourseEditMixin(OwnerCourseMixin, OwnerEditMixin):
     template_name = 'courses/manage/course/form.html'
     
-    
+
 class ManageCourseListView(OwnerCourseMixin, ListView):
     template_name = 'courses/manage/course/list.html'
     permission_required = 'courses.view_course'
@@ -194,7 +195,8 @@ class ContentOrderView(CsrfExemptMixin,
     def post(self, request):
         for id, order in self.request_json.items():
             Content.objects.filter(id=id,
-                                   module__course__owner=request.user).update(order=order)
+                                   module__course__owner=request.user) \
+                                       .update(order=order)
             return self.render_json_response({'saved': 'OK'})
         
         
