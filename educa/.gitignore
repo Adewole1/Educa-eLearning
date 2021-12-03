@@ -2,6 +2,7 @@ __pycache__/
 *.sqlite3
 media/
 staticfiles/
+static/
 .idea/
 .vscode/
 dump.rdb
