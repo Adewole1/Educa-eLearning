@@ -15,13 +15,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-<<<<<<< HEAD:educa/educa/settings/base.py
 dotenv_path = os.path.join(BASE_DIR, '.env')
 load_dotenv(dotenv_path)
 SECRET_KEY = os.environ.get('SECRET_KEY')
-=======
-SECRET_KEY = ''
->>>>>>> 8bb38e58709d9665a20763d9bd7e61aac29749e5:educa/educa/settings.py
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -46,6 +42,7 @@ INSTALLED_APPS = [
     'channels',
     'django_bootstrap5',
     'widget_tweaks',
+    'whitenoise.runserver_nostatic',
 ]
 
 MIDDLEWARE = [
@@ -57,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'courses.middleware.subdomain_course_middleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'educa.urls'
@@ -145,7 +143,6 @@ REST_FRAMEWORK = {
 }
 
 ASGI_APPLICATION = 'educa.routing.application'
-<<<<<<< HEAD:educa/educa/settings/base.py
 
 CHANNEL_LAYERS = {
     'default': {
@@ -155,5 +152,4 @@ CHANNEL_LAYERS = {
         },
     },
 }
-=======
->>>>>>> 8bb38e58709d9665a20763d9bd7e61aac29749e5:educa/educa/settings.py
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
